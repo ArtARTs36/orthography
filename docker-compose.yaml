@@ -1,0 +1,9 @@
+services:
+  db:
+    image: postgres:alpine
+    ports:
+      - 5222:5432
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=orthography
