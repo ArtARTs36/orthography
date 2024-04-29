@@ -117,7 +117,7 @@ func (p *Proxy) WarmUpPeriodically(ctx context.Context, interval time.Duration) 
 			return
 		}
 
-		slog.DebugContext(ctx, fmt.Sprintf("[orthography][proxy-store] updated %d words in cold storage", c))
+		slog.DebugContext(ctx, fmt.Sprintf("[orthography][proxy-store] updated %d words in hot storage", c))
 	}
 
 	warmup()
