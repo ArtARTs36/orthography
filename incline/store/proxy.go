@@ -91,43 +91,46 @@ func (p *Proxy) Save(ctx context.Context, words map[string]*word.Word) error {
 	return nil
 }
 
-func (p *Proxy) WarmUp(ctx context.Context) error {
+func (p *Proxy) WarmUp(ctx context.Context) (int, error) {
 	words, err := p.cold.All(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get all words from cold storage: %w", err)
+		return 0, fmt.Errorf("failed to get all words from cold storage: %w", err)
 	}
 
 	err = p.hot.Save(ctx, words)
 	if err != nil {
-		return fmt.Errorf("failed to save all words to hot storage: %w", err)
+		return 0, fmt.Errorf("failed to save all words to hot storage: %w", err)
 	}
 
-	return nil
+	return len(words), nil
 }
 
 func (p *Proxy) WarmUpPeriodically(ctx context.Context, interval time.Duration) {
-	if err := p.WarmUp(ctx); err != nil {
-		slog.
-			With(slog.String("err", err.Error())).
-			ErrorContext(ctx, "[orthography][proxy-store][warmup] failed to warmup")
+	warmup := func() {
+		slog.DebugContext(ctx, "[orthography][proxy-store] try warmup")
+
+		c, err := p.WarmUp(ctx)
+		if err != nil {
+			slog.
+				With(slog.String("err", err.Error())).
+				ErrorContext(ctx, "[orthography][proxy-store] failed to warmup")
+			return
+		}
+
+		slog.DebugContext(ctx, fmt.Sprintf("[orthography][proxy-store] updated %d words in cold storage", c))
 	}
+
+	warmup()
 
 	tick := time.NewTicker(interval).C
 
 	for {
 		select {
 		case <-ctx.Done():
-			slog.InfoContext(ctx, "[orthography][proxy-store][warmup] Stopped")
+			slog.InfoContext(ctx, "[orthography][proxy-store] warmup stopped")
 			return
 		case <-tick:
-			err := p.WarmUp(ctx)
-			if err != nil {
-				slog.
-					With(slog.String("err", err.Error())).
-					ErrorContext(ctx, "[orthography][proxy-store][warmup] failed to warmup")
-
-				continue
-			}
+			warmup()
 		}
 	}
 }

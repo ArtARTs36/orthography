@@ -39,7 +39,7 @@ func (d *DB) All(ctx context.Context) (map[string]*word.Word, error) {
 	for rows.Next() {
 		var w word.Word
 
-		err = rows.Scan(&w)
+		err = rows.Scan(&w.Nominative, &w.Genitive, &w.Dative, &w.Accusative, &w.Instrumental, &w.Prepositional)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan struct: %w", err)
 		}
