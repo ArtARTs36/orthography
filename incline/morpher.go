@@ -12,27 +12,29 @@ import (
 	"github.com/artarts36/orthography/incline/word"
 )
 
+const MorpherDefaultHost = "ws3.morpher.ru"
+
 type Morpher struct {
-	host  string
-	token string
+	cfg MorphrerConfig
 }
 
-func NewMorpher(host string, token string) *Morpher {
+type MorphrerConfig struct {
+	Host  string `env:"HOST"`
+	Token string `env:"TOKEN"`
+}
+
+func NewMorpher(cfg MorphrerConfig) *Morpher {
+	if cfg.Host == "" {
+		cfg.Host = MorpherDefaultHost
+	}
+
 	return &Morpher{
-		host:  host,
-		token: token,
+		cfg: cfg,
 	}
 }
 
 func NewMorpherDefault() *Morpher {
-	return NewMorpherWithDefaultHost("")
-}
-
-func NewMorpherWithDefaultHost(token string) *Morpher {
-	return &Morpher{
-		host:  "ws3.morpher.ru",
-		token: token,
-	}
+	return NewMorpher(MorphrerConfig{})
 }
 
 type morpherInclineNounResponse struct {
@@ -105,19 +107,19 @@ func (m *Morpher) inclineNoun(ctx context.Context, noun string) (*word.Word, err
 }
 
 func (m *Morpher) buildInclineNounURL(noun string) string {
-	if m.token == "" {
+	if m.cfg.Token == "" {
 		return fmt.Sprintf(
 			"http://%s/russian/declension?s=%s",
-			m.host,
+			m.cfg.Host,
 			noun,
 		)
 	}
 
 	return fmt.Sprintf(
 		"http://%s/russian/declension?s=%s&token=%s",
-		m.host,
+		m.cfg.Host,
 		noun,
-		m.token,
+		m.cfg.Token,
 	)
 }
 

@@ -39,7 +39,7 @@ func (p *Persistent) InclineNouns(ctx context.Context, nouns []string) (map[stri
 	if len(newWords) > 0 {
 		slog.
 			With(slog.Any("nouns", newWords)).
-			DebugContext(ctx, "[orthography] save new newWords in store")
+			DebugContext(ctx, "[orthography][inclinator] save new words in store")
 
 		err = p.store.Save(ctx, newWords)
 		if err != nil {
