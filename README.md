@@ -163,3 +163,45 @@ func main() {
 	}
 }
 ```
+
+
+## First Name
+
+package **firstname** provides methods for find information about first names
+
+### Use with txt files
+
+You can download files from repository https://github.com/Raven-SL/ru-pnames-list:
+- https://github.com/Raven-SL/ru-pnames-list/blob/master/lists/female_names_rus.txt
+- https://github.com/Raven-SL/ru-pnames-list/blob/master/lists/male_names_rus.txt
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/artarts36/orthography/firstname"
+)
+
+func main() {
+	store, err := firstname.LoadStorePerGender("./data/male_names_rus.txt", "./data/female_names_rus.txt", "")
+	if err != nil {
+		panic(err)
+	}
+
+	finder := firstname.NewStorableFinder(store)
+	res, err := finder.Find(context.Background(), []string{"Артём"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(res.Found["Артём"].Gender)
+
+	res, err = finder.Find(context.Background(), []string{"Анна"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(res.Found["Анна"].Gender)
+}
+```
