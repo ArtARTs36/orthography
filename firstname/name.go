@@ -6,7 +6,7 @@ const (
 	GenderUnspecified Gender = iota
 	GenderMale        Gender = 1
 	GenderFemale      Gender = 2
-	GenderOther       Gender = 3
+	GenderNeutral     Gender = 3
 )
 
 type Name struct {
@@ -15,7 +15,7 @@ type Name struct {
 }
 
 func genderFromInt(gender int) Gender {
-	const unspecified, male, female, other int = 0, 1, 2, 3
+	const unspecified, male, female, neutral int = 0, 1, 2, 3
 
 	switch gender {
 	case unspecified:
@@ -24,8 +24,8 @@ func genderFromInt(gender int) Gender {
 		return GenderMale
 	case female:
 		return GenderFemale
-	case other:
-		return GenderOther
+	case neutral:
+		return GenderNeutral
 	default:
 		return GenderUnspecified
 	}

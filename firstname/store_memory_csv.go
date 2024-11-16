@@ -95,7 +95,7 @@ func LoadStorePerGender(maleFilepath string, femaleFilepath string, otherFilepat
 		}
 	}
 	if otherFilepath != "" {
-		err := load(otherFilepath, GenderOther)
+		err := load(otherFilepath, GenderNeutral)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load file for other: %w", err)
 		}
