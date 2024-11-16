@@ -5,10 +5,10 @@ import (
 	"fmt"
 )
 
-var ErrNameNotFound = fmt.Errorf("name not found")
+type FindResult GetResult
 
 type Finder interface {
-	Find(ctx context.Context, name string) (*Name, error)
+	Find(ctx context.Context, names []string) (*FindResult, error)
 }
 
 type StorableFinder struct {
@@ -19,16 +19,13 @@ func NewStorableFinder(store Store) *StorableFinder {
 	return &StorableFinder{store: store}
 }
 
-func (f *StorableFinder) Find(ctx context.Context, name string) (*Name, error) {
-	res, err := f.store.Get(ctx, []string{name})
+func (f *StorableFinder) Find(ctx context.Context, names []string) (*FindResult, error) {
+	storeNames, err := f.store.Get(ctx, names)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find name: %w", err)
+		return nil, fmt.Errorf("failed to find names: %w", err)
 	}
-
-	foundName, ok := res.Found[name]
-	if !ok {
-		return nil, ErrNameNotFound
-	}
-
-	return foundName, nil
+	return &FindResult{
+		Found:    storeNames.Found,
+		NotFound: storeNames.NotFound,
+	}, nil
 }
