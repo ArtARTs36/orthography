@@ -7,15 +7,15 @@ import (
 
 type FindResult GetResult
 
-type Finder interface {
-	Find(ctx context.Context, names []string) (*FindResult, error)
+type GenderFinder interface {
+	Find(ctx context.Context, names []string) (*Gender, error)
 }
 
 type StorableFinder struct {
 	store Store
 }
 
-func NewStorableFinder(store Store) *StorableFinder {
+func NewStorableGenderFinder(store Store) *StorableFinder {
 	return &StorableFinder{store: store}
 }
 

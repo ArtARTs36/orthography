@@ -23,8 +23,8 @@ func LoadCSVStore(filepath string) (Store, error) {
 		return nil, fmt.Errorf("failed to parse csv file %q: %w", filepath, err)
 	}
 
-	mapNames := func(records [][]string) (map[string]*Name, error) {
-		result := make(map[string]*Name)
+	mapGenders := func(records [][]string) (map[string]Gender, error) {
+		result := make(map[string]Gender)
 
 		for rowIndex, row := range records {
 			if len(row) < needRowLength {
@@ -39,16 +39,13 @@ func LoadCSVStore(filepath string) (Store, error) {
 				return nil, fmt.Errorf("row[%d]: failed to parse gender: %w", rowIndex, gErr)
 			}
 
-			result[strings.ToLower(name)] = &Name{
-				Name:   name,
-				Gender: genderFromInt(genderInt),
-			}
+			result[strings.ToLower(name)] = genderFromInt(genderInt)
 		}
 
 		return result, nil
 	}
 
-	names, err := mapNames(records)
+	names, err := mapGenders(records)
 	if err != nil {
 		return nil, fmt.Errorf("failed to map data from csv file %q: %w", filepath, err)
 	}
@@ -58,7 +55,7 @@ func LoadCSVStore(filepath string) (Store, error) {
 
 // LoadStorePerGender expects file paths to file, which contain names per line.
 func LoadStorePerGender(maleFilepath string, femaleFilepath string, otherFilepath string) (Store, error) {
-	names := make(map[string]*Name)
+	names := make(map[string]Gender)
 
 	load := func(filepath string, gender Gender) error {
 		file, err := os.ReadFile(filepath)
@@ -73,10 +70,7 @@ func LoadStorePerGender(maleFilepath string, femaleFilepath string, otherFilepat
 				continue
 			}
 
-			names[strings.ToLower(name)] = &Name{
-				Name:   name,
-				Gender: gender,
-			}
+			names[strings.ToLower(name)] = gender
 		}
 
 		return nil

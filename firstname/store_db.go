@@ -22,7 +22,7 @@ func NewDBStore(tableName string, conn *sql.DB) *DBStore {
 func (d *DBStore) Get(ctx context.Context, names []string) (*GetResult, error) {
 	if len(names) == 0 {
 		return &GetResult{
-			Found:    map[string]*Name{},
+			Found:    map[string]Gender{},
 			NotFound: []string{},
 		}, nil
 	}
@@ -51,35 +51,40 @@ func (d *DBStore) Get(ctx context.Context, names []string) (*GetResult, error) {
 		return nil, fmt.Errorf("failed to execute query: %w", rowsErr)
 	}
 
-	namesMap := map[string]*Name{}
+	gendersMap := map[string]Gender{}
 
-	for rows.Next() {
-		var n Name
-
-		err = rows.Scan(&n.Name, &n.Gender)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan struct: %n", err)
-		}
-
-		namesMap[n.Name] = &n
+	type row struct {
+		Name   string `db:"name"`
+		Gender Gender `db:"gender"`
 	}
 
-	if len(namesMap) == len(names) {
+	for rows.Next() {
+		var r row
+
+		err = rows.Scan(&r.Name, &r.Gender)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan struct: %w", err)
+		}
+
+		gendersMap[r.Name] = r.Gender
+	}
+
+	if len(gendersMap) == len(names) {
 		return &GetResult{
-			Found:    namesMap,
+			Found:    gendersMap,
 			NotFound: []string{},
 		}, nil
 	}
 
-	nf := make([]string, 0, len(names)-len(namesMap))
+	nf := make([]string, 0, len(names)-len(gendersMap))
 	for _, name := range names {
-		if _, found := namesMap[name]; !found {
+		if _, found := gendersMap[name]; !found {
 			nf = append(nf, name)
 		}
 	}
 
 	return &GetResult{
-		Found:    namesMap,
+		Found:    gendersMap,
 		NotFound: nf,
 	}, nil
 }

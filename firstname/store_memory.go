@@ -6,16 +6,16 @@ import (
 )
 
 type MemoryStore struct {
-	names map[string]*Name
+	names map[string]Gender
 }
 
-func NewMemoryStore(names map[string]*Name) *MemoryStore {
+func NewMemoryStore(names map[string]Gender) *MemoryStore {
 	return &MemoryStore{names: names}
 }
 
 func (s *MemoryStore) Get(_ context.Context, names []string) (*GetResult, error) {
 	result := &GetResult{
-		Found:    map[string]*Name{},
+		Found:    map[string]Gender{},
 		NotFound: make([]string, 0),
 	}
 

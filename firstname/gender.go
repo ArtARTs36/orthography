@@ -9,11 +9,6 @@ const (
 	GenderNeutral     Gender = 3
 )
 
-type Name struct {
-	Name   string `db:"name"`
-	Gender Gender `db:"gender"`
-}
-
 func genderFromInt(gender int) Gender {
 	const unspecified, male, female, neutral int = 0, 1, 2, 3
 

@@ -5,7 +5,7 @@ import (
 )
 
 type GetResult struct {
-	Found    map[string]*Name
+	Found    map[string]Gender
 	NotFound []string
 }
 

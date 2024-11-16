@@ -34,11 +34,11 @@ func TestNaiveGenderDetector(t *testing.T) {
 		},
 	}
 
-	detector := firstname.NewNaiveGenderDetector(firstname.RussianNaiveGenderRules)
+	detector := firstname.NewNaiveGenderFinder(firstname.RussianNaiveGenderRules)
 
 	for _, c := range cases {
 		t.Run(c.Title, func(t *testing.T) {
-			assert.Equal(t, c.Gender, detector.Detect(c.FirstName))
+			assert.Equal(t, c.Gender, detector.FindOne(c.FirstName))
 		})
 	}
 }
