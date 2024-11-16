@@ -48,8 +48,10 @@ func (f *NaiveGenderFinder) FindOne(name string) Gender {
 
 	name = strings.ToLower(name)
 
+	nameLength := len([]rune(name))
+
 	for _, rule := range f.rules.Suffixes {
-		if rule.Length > len(name) {
+		if rule.Length > nameLength {
 			continue
 		}
 

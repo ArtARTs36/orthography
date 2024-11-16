@@ -32,6 +32,11 @@ func TestNaiveGenderDetector(t *testing.T) {
 			FirstName: "Агафья",
 			Gender:    firstname.GenderFemale,
 		},
+		{
+			Title:     "Ж - Анна",
+			FirstName: "Анна",
+			Gender:    firstname.GenderFemale,
+		},
 	}
 
 	detector := firstname.NewNaiveGenderFinder(firstname.RussianNaiveGenderRules)
