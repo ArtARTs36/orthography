@@ -8,7 +8,7 @@ import (
 type FindResult GetResult
 
 type GenderFinder interface {
-	Find(ctx context.Context, names []string) (*Gender, error)
+	Find(ctx context.Context, names []string) (*FindResult, error)
 }
 
 type StorableFinder struct {
