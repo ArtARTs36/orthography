@@ -196,12 +196,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(res.Found["Артём"].Gender)
+	fmt.Println(res.Found["Артём"])
 
 	res, err = finder.Find(context.Background(), []string{"Анна"})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(res.Found["Анна"].Gender)
+	fmt.Println(res.Found["Анна"])
 }
 ```
