@@ -27,10 +27,24 @@ func (d *DBStore) Get(ctx context.Context, names []string) (*GetResult, error) {
 		}, nil
 	}
 
-	placeholders := make([]string, 0, len(names))
-	args := make([]interface{}, 0, len(names))
+	preparedNames := make([]string, 0, len(names))
+	origNamesMap := make(map[string][]string)
 
-	for i, name := range names {
+	for _, name := range names {
+		preparedName := strings.ToLower(name)
+
+		if _, ok := origNamesMap[preparedName]; !ok {
+			origNamesMap[preparedName] = []string{}
+			preparedNames = append(preparedNames, preparedName)
+		}
+
+		origNamesMap[preparedName] = append(origNamesMap[preparedName], name)
+	}
+
+	placeholders := make([]string, 0, len(preparedNames))
+	args := make([]interface{}, 0, len(preparedNames))
+
+	for i, name := range preparedNames {
 		placeholders = append(placeholders, fmt.Sprintf("$%d", i+1))
 		args = append(args, name)
 	}
@@ -66,7 +80,11 @@ func (d *DBStore) Get(ctx context.Context, names []string) (*GetResult, error) {
 			return nil, fmt.Errorf("failed to scan struct: %w", err)
 		}
 
-		gendersMap[r.Name] = r.Gender
+		if origNames, ok := origNamesMap[r.Name]; ok {
+			for _, origName := range origNames {
+				gendersMap[origName] = r.Gender
+			}
+		}
 	}
 
 	if len(gendersMap) == len(names) {
